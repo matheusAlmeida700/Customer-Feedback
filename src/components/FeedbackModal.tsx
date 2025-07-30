@@ -41,7 +41,7 @@ export function FeedbackModal({
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent
-        className="sm:max-w-md md:max-w-lg lg:max-w-xl mx-4 p-6 md:p-8 rounded-2xl shadow-[var(--shadow-modal)] border-2"
+        className="sm:max-w-md md:max-w-lg lg:max-w-xl p-6 md:p-8 rounded-2xl shadow-[var(--shadow-modal)] border-2"
         style={{ boxShadow: "var(--shadow-modal)" }}
       >
         <DialogHeader className="text-center space-y-4">
@@ -89,7 +89,7 @@ export function FeedbackModal({
               size="kiosk"
               onClick={handleConfirm}
               disabled={isSubmitting}
-              className="flex-1 bg-green-600 hover:bg-green-500"
+              className="flex-1 bg-green-600 hover:bg-green-500 px-3"
             >
               {isSubmitting ? (
                 <>

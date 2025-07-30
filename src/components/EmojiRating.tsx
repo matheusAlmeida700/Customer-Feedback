@@ -93,7 +93,7 @@ export function EmojiRating({ onSelect }: EmojiRatingProps) {
             <img
               src={option.image}
               alt={option.label}
-              className="w-16 h-16 md:w-36 md:h-36 mb-2 rounded-full object-cover"
+              className="w-36 h-36 mb-2 rounded-full object-cover"
             />
             <span className="text-base font-medium text-foreground/80">
               {option.label}
