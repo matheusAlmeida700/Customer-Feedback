@@ -60,6 +60,41 @@ function getRatingEmoji(rating: number): string {
   return emojiMap[rating] || "❓";
 }
 
+export async function sendAlertEmail(location: string): Promise<void> {
+  try {
+    const message = `
+🚨 ALERT TRIGGERED
+
+- Location: ${location}
+- Timestamp: ${formatTimestamp(new Date().toISOString())}
+- Device Info: ${navigator.userAgent}
+
+⚠️ This alert was triggered from the satisfaction kiosk at the specified location.
+    `;
+
+    const templateParams = {
+      name: "Alert Notification",
+      message: message,
+    };
+
+    const response = await emailjs.send(
+      import.meta.env.VITE_EMAILJS_SERVICE_ID,
+      import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+      templateParams,
+      import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+    );
+
+    if (response.status !== 200) {
+      throw new Error(`EmailJS error: ${response.text}`);
+    }
+
+    console.log("Alert email sent successfully:", response);
+  } catch (error) {
+    console.error("Failed to send alert email:", error);
+    throw error;
+  }
+}
+
 function formatTimestamp(dateString: string): string {
   const date = new Date(dateString);
   return new Intl.DateTimeFormat("pt-BR", {
