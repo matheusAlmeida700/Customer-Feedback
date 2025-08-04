@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { EmojiRating, RatingOption } from "./EmojiRating";
 import { FeedbackModal } from "./FeedbackModal";
 import { sendFeedbackEmail, FeedbackData } from "@/services/emailService";
 import Swal from "sweetalert2";
+import { LocationSetupModal } from "./LocationSetupModal";
+import { AlertButton } from "./AlertButton";
 
 export function CustomerSurvey() {
   const [selectedRating, setSelectedRating] = useState<RatingOption | null>(
@@ -10,6 +12,23 @@ export function CustomerSurvey() {
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [location, setLocation] = useState<string>("");
+  const [isLocationSetupOpen, setIsLocationSetupOpen] = useState(false);
+
+  useEffect(() => {
+    const savedLocation = localStorage.getItem("kioskLocation");
+    if (savedLocation) {
+      setLocation(savedLocation);
+    } else {
+      setIsLocationSetupOpen(true);
+    }
+  }, []);
+
+  const handleLocationSet = (newLocation: string) => {
+    localStorage.setItem("kioskLocation", newLocation);
+    setLocation(newLocation);
+    setIsLocationSetupOpen(false);
+  };
 
   const handleRatingSelect = (rating: RatingOption) => {
     setSelectedRating(rating);
@@ -89,6 +108,12 @@ export function CustomerSurvey() {
           onConfirm={handleConfirmFeedback}
           isSubmitting={isSubmitting}
         />
+        <LocationSetupModal
+          isOpen={isLocationSetupOpen}
+          onLocationSet={handleLocationSet}
+        />
+
+        {location && <AlertButton location={location} />}
       </div>
     </div>
   );

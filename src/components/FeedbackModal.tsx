@@ -68,10 +68,18 @@ export function FeedbackModal({
             <Textarea
               placeholder="Share your thoughts on how we can make your experience better..."
               value={comment}
-              onChange={(e) => setComment(e.target.value)}
+              onChange={(e) => {
+                if (e.target.value.length <= 200) {
+                  setComment(e.target.value);
+                }
+              }}
               className="min-h-24 md:min-h-32 text-base md:text-lg p-4 rounded-xl border-2 resize-none"
               disabled={isSubmitting}
             />
+
+            <p className="text-sm text-gray-500 mt-2">
+              {comment.length}/{200} characters
+            </p>
           </div>
 
           <div className="flex gap-4 pt-4">
