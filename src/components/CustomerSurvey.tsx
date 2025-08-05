@@ -97,7 +97,7 @@ export function CustomerSurvey() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30 flex items-center justify-center p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30 flex items-center justify-center p-8">
       <div className="w-full max-w-7xl">
         <EmojiRating onSelect={handleRatingSelect} />
 

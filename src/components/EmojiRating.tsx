@@ -86,7 +86,7 @@ export function EmojiRating({ onSelect }: EmojiRatingProps) {
         ))}
       </div>
 
-      <div className="w-full max-w-2xl mx-auto mt-8 mb-8">
+      <div className="w-full max-w-2xl mx-auto mt-8 mb-4 md:mb-8">
         <div className="h-4 bg-gradient-to-r from-red-500 via-orange-400 via-yellow-400 to-green-500 rounded-full shadow-inner"></div>
         <div className="flex justify-between mt-2 text-md text-muted-foreground">
           <span>Very Bad</span>
@@ -94,7 +94,7 @@ export function EmojiRating({ onSelect }: EmojiRatingProps) {
         </div>
       </div>
 
-      <div className="text-center mt-8">
+      <div className="text-center md:mt-8">
         <p className="text-base md:text-lg text-muted-foreground">
           Your feedback helps us improve our service
         </p>
