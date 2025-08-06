@@ -1,11 +1,15 @@
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FeedbackData } from "@/services/emailService";
 import { fetchFeedbacks } from "@/services/supabaseService";
+import { Home } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function FeedbackList() {
   const [feedbacks, setFeedbacks] = useState<FeedbackData[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function loadFeedbacks() {
@@ -26,6 +30,13 @@ export default function FeedbackList() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30 flex justify-center px-8 pt-24 pb-8">
       <div className="w-full max-w-7xl">
+        <Button
+          className="bg-slate-800 text-lg rounded-full text-white hover:scale-105 transition-all hover:bg-slate-800/90 fixed top-6 left-6 z-50"
+          onClick={() => navigate("/")}
+        >
+          <Home />
+          Home
+        </Button>
         <div className="text-center mb-10">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground">
             User Feedbacks
@@ -44,7 +55,7 @@ export default function FeedbackList() {
               <CardContent className="p-6 space-y-3">
                 <div className="flex items-center justify-between text-2xl">
                   <span>{fb.emoji}</span>
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-base text-muted-foreground">
                     {new Date(fb.timestamp).toLocaleString()}
                   </span>
                 </div>
@@ -65,8 +76,8 @@ export default function FeedbackList() {
                   )}
                 </div>
 
-                <div className="text-sm text-muted-foreground pt-2 border-t border-border">
-                  Location: <span className="font-medium">{fb.location}</span>
+                <div className="text-base text-foreground/90 pt-2 border-t border-border">
+                  Location: <span className="font-semibold">{fb.location}</span>
                 </div>
               </CardContent>
             </Card>
