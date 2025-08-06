@@ -5,6 +5,7 @@ import { sendFeedbackEmail, FeedbackData } from "@/services/emailService";
 import Swal from "sweetalert2";
 import { LocationSetupModal } from "./LocationSetupModal";
 import { AlertButton } from "./AlertButton";
+import { saveFeedbackToSupabase } from "@/services/supabaseService";
 
 export function CustomerSurvey() {
   const [selectedRating, setSelectedRating] = useState<RatingOption | null>(
@@ -44,13 +45,14 @@ export function CustomerSurvey() {
       const feedbackData: FeedbackData = {
         rating: selectedRating.value,
         emoji: selectedRating.emoji,
-        ratingLabel: selectedRating.label,
+        rating_label: selectedRating.label,
         comment: comment.trim() || undefined,
         timestamp: new Date().toISOString(),
-        userAgent: navigator.userAgent,
+        location: navigator.userAgent,
       };
 
       await sendFeedbackEmail(feedbackData);
+      await saveFeedbackToSupabase(feedbackData);
 
       setIsModalOpen(false);
       setSelectedRating(null);

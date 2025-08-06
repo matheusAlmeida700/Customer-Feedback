@@ -3,10 +3,10 @@ import emailjs from "@emailjs/browser";
 export interface FeedbackData {
   rating: number;
   emoji?: string;
-  ratingLabel: string;
+  rating_label: string;
   comment?: string;
   timestamp: string;
-  userAgent: string;
+  location: string;
 }
 
 const FEEDBACK_COOLDOWN_MS = 30 * 1000;
@@ -30,10 +30,10 @@ export async function sendFeedbackEmail(
     const message = `
 📊 New Customer Satisfaction Feedback
 
-- Rating: ${emoji} ${feedbackData.ratingLabel} (${feedbackData.rating}/3)
+- Rating: ${emoji} ${feedbackData.rating_label} (${feedbackData.rating}/3)
 - Comment: ${feedbackData.comment || "No comment provided"}
 - Timestamp: ${formatTimestamp(feedbackData.timestamp)}
-- Device Info: ${feedbackData.userAgent}
+- Device Info: ${feedbackData.location}
 
 ✅ This feedback was submitted via the satisfaction kiosk.
     `;
