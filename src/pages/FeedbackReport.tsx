@@ -25,7 +25,6 @@ export default function FeedbackList() {
 
     loadFeedbacks();
   }, []);
-  console.log(feedbacks);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30 flex justify-center px-8 pt-24 pb-8">
