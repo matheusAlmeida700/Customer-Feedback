@@ -4,7 +4,6 @@ export interface FeedbackData {
   rating: number;
   emoji?: string;
   rating_label: string;
-  comment?: string;
   timestamp: string;
   location: string;
 }
@@ -31,7 +30,6 @@ export async function sendFeedbackEmail(
 📊 New Customer Satisfaction Feedback
 
 - Rating: ${emoji} ${feedbackData.rating_label} (${feedbackData.rating}/3)
-- Comment: ${feedbackData.comment || "No comment provided"}
 - Timestamp: ${formatTimestamp(feedbackData.timestamp)}
 - Device Info: ${feedbackData.location}
 

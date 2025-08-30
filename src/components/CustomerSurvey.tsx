@@ -54,7 +54,7 @@ export function CustomerSurvey() {
     setIsModalOpen(true);
   };
 
-  const handleConfirmFeedback = async (comment: string) => {
+  const handleConfirmFeedback = async () => {
     if (!selectedRating) return;
     setIsSubmitting(true);
 
@@ -63,7 +63,6 @@ export function CustomerSurvey() {
         rating: selectedRating.value,
         emoji: selectedRating.emoji,
         rating_label: selectedRating.label,
-        comment: comment.trim() || undefined,
         timestamp: new Date().toISOString(),
         location: navigator.userAgent,
       };

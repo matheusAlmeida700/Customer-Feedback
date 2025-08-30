@@ -14,7 +14,6 @@ export async function saveFeedbackToSupabase(
       rating: feedback.rating,
       emoji: feedback.emoji,
       rating_label: feedback.rating_label,
-      comment: feedback.comment,
       timestamp: feedback.timestamp,
       location: localStorage.getItem("kioskLocation") || "Unknown",
     },

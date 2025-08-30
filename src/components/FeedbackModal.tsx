@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -6,14 +5,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { RatingOption } from "./EmojiRating";
 
 interface FeedbackModalProps {
   isOpen: boolean;
   onClose: () => void;
   selectedRating: RatingOption | null;
-  onConfirm: (comment: string) => void;
+  onConfirm: () => void;
   isSubmitting: boolean;
 }
 
@@ -24,16 +22,12 @@ export function FeedbackModal({
   onConfirm,
   isSubmitting,
 }: FeedbackModalProps) {
-  const [comment, setComment] = useState("");
-
   const handleConfirm = () => {
-    onConfirm(comment);
-    setComment("");
+    onConfirm();
   };
 
   const handleClose = () => {
     onClose();
-    setComment("");
   };
 
   if (!selectedRating) return null;
@@ -44,7 +38,7 @@ export function FeedbackModal({
         className="sm:max-w-md md:max-w-lg lg:max-w-xl p-6 md:p-8 rounded-2xl shadow-[var(--shadow-modal)] border-2"
         style={{ boxShadow: "var(--shadow-modal)" }}
       >
-        <DialogHeader className="text-center space-y-4">
+        <DialogHeader className="text-center space-y-8">
           <div className="flex flex-col items-center gap-4">
             <img
               src={selectedRating.image}
@@ -55,33 +49,12 @@ export function FeedbackModal({
               {selectedRating.label}
             </DialogTitle>
           </div>
-          <p className="text-lg md:text-xl text-muted-foreground">
+          <p className="text-lg md:text-xl text-muted-foreground text-center">
             You selected "{selectedRating.label}" rating
           </p>
         </DialogHeader>
 
-        <div className="space-y-6 mt-6">
-          <div>
-            <label className="text-base md:text-lg font-medium text-foreground mb-3 block">
-              Tell us how we can improve (optional):
-            </label>
-            <Textarea
-              placeholder="Share your thoughts on how we can make your experience better..."
-              value={comment}
-              onChange={(e) => {
-                if (e.target.value.length <= 200) {
-                  setComment(e.target.value);
-                }
-              }}
-              className="min-h-24 md:min-h-32 text-base md:text-lg p-4 rounded-xl border-2 resize-none"
-              disabled={isSubmitting}
-            />
-
-            <p className="text-sm text-gray-500 mt-2">
-              {comment.length}/{200} characters
-            </p>
-          </div>
-
+        <div className="space-y-6 mt-2">
           <div className="flex gap-4 pt-4">
             <Button
               variant="cancel"

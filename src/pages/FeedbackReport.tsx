@@ -47,7 +47,6 @@ export default function FeedbackList() {
         Emoji: fb.emoji,
         Rating: fb.rating,
         "Rating Label": fb.rating_label,
-        Comment: fb.comment || "No comments",
         Location: fb.location,
       }))
     );
@@ -128,10 +127,6 @@ export default function FeedbackList() {
                 <h3 className="text-lg font-semibold text-foreground">
                   Rating: {fb.rating} – {fb.rating_label}
                 </h3>
-
-                <p className="text-base text-foreground/90 italic">
-                  {fb.comment || "No comment provided."}
-                </p>
 
                 <div className="text-base text-foreground/90 pt-2 border-t border-border">
                   Location: <span className="font-semibold">{fb.location}</span>
