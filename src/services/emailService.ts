@@ -60,7 +60,10 @@ export async function sendFeedbackEmail(
   }
 }
 
-export async function sendAlertEmail(location: string): Promise<void> {
+export async function sendAlertEmail(
+  location: string,
+  urgencyLevel: string
+): Promise<void> {
   const lastSent = Number(localStorage.getItem("lastAlertSent") || "0");
   const now = Date.now();
 
@@ -72,6 +75,7 @@ export async function sendAlertEmail(location: string): Promise<void> {
     const message = `
 🚨 ALERT TRIGGERED
 
+- Urgency Level: ${urgencyLevel}
 - Location: ${location}
 - Timestamp: ${formatTimestamp(new Date().toISOString())}
 - Device Info: ${navigator.userAgent}

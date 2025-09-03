@@ -12,19 +12,45 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
+import { Card } from "./ui/card";
 
 interface AlertButtonProps {
   location: string;
 }
 
+const urgencyLevels = [
+  {
+    id: "emergency",
+    label: "🚨 Emergency - Immediate",
+    color: "border-red-500 bg-red-50 hover:bg-red-100",
+  },
+  {
+    id: "non-immediate",
+    label: "⚠️ Non-immediate Emergency",
+    color: "border-orange-500 bg-orange-50 hover:bg-orange-100",
+  },
+  {
+    id: "dayporter",
+    label: "🧹 Dayporter Service - Non-urgent",
+    color: "border-yellow-500 bg-yellow-50 hover:bg-yellow-100",
+  },
+];
+
 export function AlertButton({ location }: AlertButtonProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedUrgency, setSelectedUrgency] = useState<string>("");
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleAlert = async () => {
+    if (!selectedUrgency) return;
+
     setIsSubmitting(true);
+    setTimeout(() => setIsOpen(false), 1500);
 
     try {
-      await sendAlertEmail(location);
+      const urgencyLabel =
+        urgencyLevels.find((u) => u.id === selectedUrgency)?.label || "";
+      await sendAlertEmail(location, urgencyLabel);
 
       await Swal.fire({
         title: "Alert Sent!",
@@ -63,12 +89,13 @@ export function AlertButton({ location }: AlertButtonProps) {
   };
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
           variant="destructive"
           size="lg"
           className="fixed bottom-6 right-6 z-50 rounded-full shadow-2xl hover:scale-105 transition-all duration-200 text-xl"
+          onClick={() => setIsOpen(true)}
           disabled={isSubmitting}
         >
           🚨 Press Alert
@@ -80,9 +107,35 @@ export function AlertButton({ location }: AlertButtonProps) {
             Send Alert
           </DialogTitle>
           <DialogDescription className="text-lg text-center text-muted-foreground">
-            Are you sure you want to send an alert for &quot;{location}&quot;?
+            Select urgency level for &quot;{location}&quot;
           </DialogDescription>
         </DialogHeader>
+
+        <div className="space-y-3 py-4">
+          {urgencyLevels.map((urgency) => (
+            <Card
+              key={urgency.id}
+              className={`p-4 cursor-pointer border-2 transition-all ${
+                selectedUrgency === urgency.id
+                  ? `${urgency.color} border-opacity-100`
+                  : "border-border hover:border-gray-300"
+              }`}
+              onClick={() => setSelectedUrgency(urgency.id)}
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-medium text-lg">{urgency.label}</span>
+                <div
+                  className={`w-5 h-5 rounded-full border-2 ${
+                    selectedUrgency === urgency.id
+                      ? "bg-primary border-primary"
+                      : "border-gray-300"
+                  }`}
+                />
+              </div>
+            </Card>
+          ))}
+        </div>
+
         <DialogFooter className="gap-4">
           <DialogClose asChild>
             <Button className="flex-1 bg-orange-100 text-gray-600 hover:bg-orange-50 border-2 border-border min-h-12 text-base">
@@ -91,8 +144,8 @@ export function AlertButton({ location }: AlertButtonProps) {
           </DialogClose>
           <Button
             onClick={handleAlert}
-            disabled={isSubmitting}
-            className="flex-1 bg-red-600 hover:bg-red-500 min-h-12 text-base"
+            disabled={isSubmitting || !selectedUrgency}
+            className="flex-1 bg-red-600 hover:bg-red-500 min-h-12 text-base disabled:opacity-50"
           >
             {isSubmitting ? (
               <>

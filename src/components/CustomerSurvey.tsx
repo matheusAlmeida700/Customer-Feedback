@@ -8,7 +8,7 @@ import { AlertButton } from "./AlertButton";
 import { saveFeedbackToSupabase } from "@/services/supabaseService";
 import { useNavigate } from "react-router";
 import { Button } from "./ui/button";
-import { Newspaper } from "lucide-react";
+import { MapPin, Newspaper } from "lucide-react";
 import {
   Dialog,
   DialogClose,
@@ -155,6 +155,11 @@ export function CustomerSurvey() {
           <Newspaper />
           Feedback Report
         </Button>
+
+        <span className="flex gap-1 text-lg text-foreground rounded-full absolute top-6 right-6">
+          <MapPin className="w-5" />
+          {location}
+        </span>
 
         <EmojiRating onSelect={handleRatingSelect} />
 
