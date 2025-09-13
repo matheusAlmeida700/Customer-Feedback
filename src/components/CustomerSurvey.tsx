@@ -30,6 +30,7 @@ export function CustomerSurvey() {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [passwordInput, setPasswordInput] = useState("");
   const [isCheckingPassword, setIsCheckingPassword] = useState(false);
+  const [isDeleteLocationOpen, setIsDeleteLocationOpen] = useState(false);
 
   const correctPassword = atob("UHIwdGV4Y2xlYW5pbmc=");
   const navigate = useNavigate();
@@ -47,6 +48,13 @@ export function CustomerSurvey() {
     localStorage.setItem("kioskLocation", newLocation);
     setLocation(newLocation);
     setIsLocationSetupOpen(false);
+  };
+
+  const handleDeleteLocation = () => {
+    localStorage.removeItem("kioskLocation");
+    setLocation("");
+    setIsDeleteLocationOpen(false);
+    setIsLocationSetupOpen(true);
   };
 
   const handleRatingSelect = (rating: RatingOption) => {
@@ -156,7 +164,10 @@ export function CustomerSurvey() {
           Feedback Report
         </Button>
 
-        <span className="flex gap-1 text-lg text-foreground rounded-full absolute top-6 right-6">
+        <span
+          onClick={() => setIsDeleteLocationOpen(true)}
+          className="flex gap-1 text-lg text-foreground rounded-full absolute top-6 right-6 cursor-pointer hover:underline"
+        >
           <MapPin className="w-5" />
           {location}
         </span>
@@ -174,6 +185,40 @@ export function CustomerSurvey() {
           isOpen={isLocationSetupOpen}
           onLocationSet={handleLocationSet}
         />
+
+        <Dialog
+          open={isDeleteLocationOpen}
+          onOpenChange={setIsDeleteLocationOpen}
+        >
+          <DialogContent className="rounded-2xl shadow-lg border-2">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-center">
+                Are you sure?
+              </DialogTitle>
+              <DialogDescription className="text-center text-xl pt-4 text-muted-foreground">
+                Do you really want to delete this location?
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="flex gap-4 pt-4">
+              <Button
+                variant="cancel"
+                size="kiosk"
+                onClick={() => setIsDeleteLocationOpen(false)}
+                className="flex-1 bg-orange-100 text-gray-600 hover:bg-orange-50"
+              >
+                No
+              </Button>
+              <Button
+                variant="confirm"
+                size="kiosk"
+                onClick={handleDeleteLocation}
+                className="flex-1 bg-red-600 text-white hover:bg-red-500"
+              >
+                Yes
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {location && <AlertButton location={location} />}
       </div>
