@@ -78,7 +78,7 @@ export function CustomerSurvey() {
       setTimeout(() => {
         setIsModalOpen(false);
       }, 2000);
-      await sendFeedbackEmail(feedbackData);
+      await sendFeedbackEmail(location, feedbackData);
 
       await saveFeedbackToSupabase(feedbackData);
 

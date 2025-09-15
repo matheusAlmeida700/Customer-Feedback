@@ -12,6 +12,7 @@ const FEEDBACK_COOLDOWN_MS = 30 * 1000;
 const ALERT_COOLDOWN_MS = 30 * 1000;
 
 export async function sendFeedbackEmail(
+  location: string,
   feedbackData: FeedbackData
 ): Promise<void> {
   const lastSent = Number(localStorage.getItem("lastFeedbackSent") || "0");
@@ -30,6 +31,7 @@ export async function sendFeedbackEmail(
 📊 New Customer Satisfaction Feedback
 
 - Rating: ${emoji} ${feedbackData.rating_label} (${feedbackData.rating}/3)
+- Location: ${location}
 - Timestamp: ${formatTimestamp(feedbackData.timestamp)}
 - Device Info: ${feedbackData.location}
 
