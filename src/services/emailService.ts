@@ -39,7 +39,7 @@ export async function sendFeedbackEmail(
     `;
 
     const templateParams = {
-      name: "Customer Satisfaction Alert",
+      name: `Alert ${feedbackData.rating_label} (${feedbackData.rating}/3) - ${location}`,
       message: message,
     };
 
