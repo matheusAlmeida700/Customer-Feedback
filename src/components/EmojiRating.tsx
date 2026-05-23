@@ -82,7 +82,7 @@ export function EmojiRating({ onSelect }: EmojiRatingProps) {
             <span className="text-base font-medium text-foreground/80">
               {option.label}
             </span>
-          </Button>
+          </Button> 
         ))}
       </div>
 

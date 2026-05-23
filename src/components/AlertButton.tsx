@@ -13,6 +13,7 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { Card } from "./ui/card";
+import { LOCATION_PASSWORDS } from "@/lib/locationPasswords";
 
 interface AlertButtonProps {
   location: string;
@@ -36,13 +37,40 @@ const urgencyLevels = [
   },
 ];
 
+const validateLocationPassword = (
+  location: string,
+  inputPassword: string,
+): boolean => {
+  const encoded = LOCATION_PASSWORDS[location];
+  if (!encoded) return false;
+
+  const decodedPassword = atob(encoded);
+  return inputPassword === decodedPassword;
+};
+
 export function AlertButton({ location }: AlertButtonProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedUrgency, setSelectedUrgency] = useState<string>("");
   const [isOpen, setIsOpen] = useState(false);
 
+  const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState(false);
+
   const handleAlert = async () => {
     if (!selectedUrgency) return;
+
+    const isValid = validateLocationPassword(
+      location
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-zA-Z0-9]/g, ""),
+      password,
+    );
+
+    if (!isValid) {
+      setPasswordError(true);
+      return;
+    }
 
     setIsSubmitting(true);
     setTimeout(() => setIsOpen(false), 1500);
@@ -136,6 +164,31 @@ export function AlertButton({ location }: AlertButtonProps) {
           ))}
         </div>
 
+        <div className="space-y-2">
+          <label className="font-medium">Authorization Password</label>
+
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setPasswordError(false);
+            }}
+            placeholder="Enter location password"
+            className={`w-full rounded-lg border-2 px-3 py-2 text-base outline-none transition ${
+              passwordError
+                ? "border-red-500 focus:ring-red-500"
+                : "border-border focus:ring-primary"
+            }`}
+          />
+
+          {passwordError && (
+            <p className="text-sm text-red-500">
+              Invalid password for this location.
+            </p>
+          )}
+        </div>
+
         <DialogFooter className="gap-4">
           <DialogClose asChild>
             <Button className="flex-1 bg-orange-100 text-gray-600 hover:bg-orange-50 border-2 border-border min-h-12 text-base">
@@ -144,7 +197,7 @@ export function AlertButton({ location }: AlertButtonProps) {
           </DialogClose>
           <Button
             onClick={handleAlert}
-            disabled={isSubmitting || !selectedUrgency}
+            disabled={isSubmitting || !selectedUrgency || !password}
             className="flex-1 bg-red-600 hover:bg-red-500 min-h-12 text-base disabled:opacity-50"
           >
             {isSubmitting ? (
