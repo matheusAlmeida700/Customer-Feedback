@@ -11,16 +11,22 @@ export interface FeedbackData {
 const FEEDBACK_COOLDOWN_MS = 30 * 1000;
 const ALERT_COOLDOWN_MS = 30 * 1000;
 
+const getFeedbackEmail = (rating: number): string => {
+  return rating === 1
+    ? import.meta.env.VITE_EMAILJS_BAD_FEEDBACK_EMAIL
+    : import.meta.env.VITE_EMAILJS_REGULAR_FEEDBACK_EMAIL;
+};
+
 export async function sendFeedbackEmail(
   location: string,
-  feedbackData: FeedbackData
+  feedbackData: FeedbackData,
 ): Promise<void> {
   const lastSent = Number(localStorage.getItem("lastFeedbackSent") || "0");
   const now = Date.now();
 
   if (now - lastSent < FEEDBACK_COOLDOWN_MS) {
     throw new Error(
-      `Please wait a few seconds before sending another feedback.`
+      `Please wait a few seconds before sending another feedback.`,
     );
   }
 
@@ -39,6 +45,7 @@ export async function sendFeedbackEmail(
     `;
 
     const templateParams = {
+      to_email: getFeedbackEmail(feedbackData.rating),
       name: `Alert ${feedbackData.rating_label} (${feedbackData.rating}/3) - ${location}`,
       message: message,
     };
@@ -47,7 +54,7 @@ export async function sendFeedbackEmail(
       import.meta.env.VITE_EMAILJS_SERVICE_ID,
       import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
       templateParams,
-      import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+      import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
     );
 
     if (response.status !== 200) {
@@ -64,7 +71,7 @@ export async function sendFeedbackEmail(
 
 export async function sendAlertEmail(
   location: string,
-  urgencyLevel: string
+  urgencyLevel: string,
 ): Promise<void> {
   const lastSent = Number(localStorage.getItem("lastAlertSent") || "0");
   const now = Date.now();
@@ -86,7 +93,8 @@ export async function sendAlertEmail(
     `;
 
     const templateParams = {
-      name: "Alert Notification",
+      to_email: import.meta.env.VITE_EMAILJS_ALERTS_EMAIL,
+      name: "Critical Alert Notification",
       message: message,
     };
 
@@ -94,7 +102,7 @@ export async function sendAlertEmail(
       import.meta.env.VITE_EMAILJS_SERVICE_ID,
       import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
       templateParams,
-      import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+      import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
     );
 
     if (response.status !== 200) {
