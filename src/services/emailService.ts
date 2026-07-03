@@ -1,5 +1,17 @@
 import emailjs from "@emailjs/browser";
 
+export class CooldownError extends Error {
+  remainingMs: number;
+
+  constructor(remainingMs: number) {
+    super(
+      `Please wait ${Math.ceil(remainingMs / 1000)}s before sending again.`,
+    );
+    this.name = "CooldownError";
+    this.remainingMs = remainingMs;
+  }
+}
+
 export interface FeedbackData {
   rating: number;
   emoji?: string;
@@ -25,9 +37,7 @@ export async function sendFeedbackEmail(
   const now = Date.now();
 
   if (now - lastSent < FEEDBACK_COOLDOWN_MS) {
-    throw new Error(
-      `Please wait a few seconds before sending another feedback.`,
-    );
+    throw new CooldownError(FEEDBACK_COOLDOWN_MS - (now - lastSent));
   }
 
   try {
@@ -77,7 +87,7 @@ export async function sendAlertEmail(
   const now = Date.now();
 
   if (now - lastSent < ALERT_COOLDOWN_MS) {
-    throw new Error(`Please wait a few seconds before sending another alert.`);
+    throw new CooldownError(ALERT_COOLDOWN_MS - (now - lastSent));
   }
 
   try {

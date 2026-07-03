@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { sendAlertEmail } from "@/services/emailService";
+import { sendAlertEmail, CooldownError } from "@/services/emailService";
 import Swal from "sweetalert2";
 import {
   Dialog,
@@ -98,19 +98,51 @@ export function AlertButton({ location }: AlertButtonProps) {
     } catch (error) {
       console.error("Error sending alert:", error);
 
-      await Swal.fire({
-        title: "Oops!",
-        text: "There was an error sending the alert. Please try again.",
-        icon: "error",
-        confirmButtonText: "Try Again",
-        confirmButtonColor: "hsl(var(--destructive))",
-        background: "hsl(var(--card))",
-        color: "hsl(var(--card-foreground))",
-        customClass: {
-          popup: "rounded-2xl shadow-2xl",
-          confirmButton: "rounded-xl px-8 py-3 text-lg font-semibold",
-        },
-      });
+      if (error instanceof CooldownError) {
+        const initialSeconds = Math.ceil(error.remainingMs / 1000);
+
+        await Swal.fire({
+          title: "Please hold on",
+          html: `An alert was already sent recently.<br/>You can send another one in <b id="alert-cooldown-timer">${initialSeconds}</b>s.`,
+          icon: "info",
+          confirmButtonText: "Got it",
+          confirmButtonColor: "hsl(var(--primary))",
+          background: "hsl(var(--card))",
+          color: "hsl(var(--card-foreground))",
+          customClass: {
+            popup: "rounded-2xl shadow-2xl",
+            confirmButton: "rounded-xl px-8 py-3 text-lg font-semibold",
+          },
+          timer: error.remainingMs,
+          timerProgressBar: true,
+          didOpen: () => {
+            const timerEl = document.getElementById("alert-cooldown-timer");
+            const interval = setInterval(() => {
+              const secondsLeft = Math.ceil((Swal.getTimerLeft() ?? 0) / 1000);
+              if (timerEl) {
+                timerEl.textContent = String(Math.max(secondsLeft, 0));
+              }
+            }, 200);
+            Swal.getPopup()?.addEventListener("swal-close", () =>
+              clearInterval(interval),
+            );
+          },
+        });
+      } else {
+        await Swal.fire({
+          title: "Oops!",
+          text: "There was an error sending the alert. Please try again.",
+          icon: "error",
+          confirmButtonText: "Try Again",
+          confirmButtonColor: "hsl(var(--destructive))",
+          background: "hsl(var(--card))",
+          color: "hsl(var(--card-foreground))",
+          customClass: {
+            popup: "rounded-2xl shadow-2xl",
+            confirmButton: "rounded-xl px-8 py-3 text-lg font-semibold",
+          },
+        });
+      }
     } finally {
       setIsSubmitting(false);
     }

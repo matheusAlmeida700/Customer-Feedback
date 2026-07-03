@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { EmojiRating, RatingOption } from "./EmojiRating";
 import { FeedbackModal } from "./FeedbackModal";
-import { sendFeedbackEmail, FeedbackData } from "@/services/emailService";
+import {
+  sendFeedbackEmail,
+  FeedbackData,
+  CooldownError,
+} from "@/services/emailService";
 import Swal from "sweetalert2";
 import { LocationSetupModal } from "./LocationSetupModal";
 import { AlertButton } from "./AlertButton";
@@ -21,7 +25,7 @@ import {
 
 export function CustomerSurvey() {
   const [selectedRating, setSelectedRating] = useState<RatingOption | null>(
-    null
+    null,
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -103,19 +107,51 @@ export function CustomerSurvey() {
     } catch (error) {
       console.error("Error sending feedback:", error);
 
-      await Swal.fire({
-        title: "Oops!",
-        text: "There was an error sending your feedback. Please try again or contact support.",
-        icon: "error",
-        confirmButtonText: "Try Again",
-        confirmButtonColor: "hsl(var(--destructive))",
-        background: "hsl(var(--card))",
-        color: "hsl(var(--card-foreground))",
-        customClass: {
-          popup: "rounded-2xl shadow-2xl",
-          confirmButton: "rounded-xl px-8 py-3 text-lg font-semibold",
-        },
-      });
+      if (error instanceof CooldownError) {
+        const initialSeconds = Math.ceil(error.remainingMs / 1000);
+
+        await Swal.fire({
+          title: "Please hold on",
+          html: `You already sent a feedback recently.<br/>You can send another one in <b id="cooldown-timer">${initialSeconds}</b>s.`,
+          icon: "info",
+          confirmButtonText: "Got it",
+          confirmButtonColor: "hsl(var(--primary))",
+          background: "hsl(var(--card))",
+          color: "hsl(var(--card-foreground))",
+          customClass: {
+            popup: "rounded-2xl shadow-2xl",
+            confirmButton: "rounded-xl px-8 py-3 text-lg font-semibold",
+          },
+          timer: error.remainingMs,
+          timerProgressBar: true,
+          didOpen: () => {
+            const timerEl = document.getElementById("cooldown-timer");
+            const interval = setInterval(() => {
+              const secondsLeft = Math.ceil((Swal.getTimerLeft() ?? 0) / 1000);
+              if (timerEl) {
+                timerEl.textContent = String(Math.max(secondsLeft, 0));
+              }
+            }, 200);
+            Swal.getPopup()?.addEventListener("swal-close", () =>
+              clearInterval(interval),
+            );
+          },
+        });
+      } else {
+        await Swal.fire({
+          title: "Oops!",
+          text: "There was an error sending your feedback. Please try again or contact support.",
+          icon: "error",
+          confirmButtonText: "Try Again",
+          confirmButtonColor: "hsl(var(--destructive))",
+          background: "hsl(var(--card))",
+          color: "hsl(var(--card-foreground))",
+          customClass: {
+            popup: "rounded-2xl shadow-2xl",
+            confirmButton: "rounded-xl px-8 py-3 text-lg font-semibold",
+          },
+        });
+      }
     } finally {
       setIsSubmitting(false);
     }
